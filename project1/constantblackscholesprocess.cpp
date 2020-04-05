@@ -6,8 +6,12 @@ namespace QuantLib {
 	ConstantBlackScholesProcess::ConstantBlackScholesProcess(const Real& S,
                    const Rate& r,
                    const Volatility& sigma,
-		   const Rate& q) :
-		...
+		   const Rate& q) {
+			/*
+      			  registerWith(x0_);
+      			  registerWith(riskFreeRate_);
+      			  registerWith(dividendYield_);
+      			  registerWith(blackVolatility_);	*/
 	}
 
     Real ConstantBlackScholesProcess::x0() const {
