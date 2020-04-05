@@ -8,10 +8,7 @@ namespace QuantLib {
 	/* Equation :  d\ln S(t) = (r(t) - q(t) - \frac{\sigma(t, S)^2}{2}) dt + \sigma dW_t. */
 	
 	// Constructor
-        ConstantBlackScholesProcess(const Real& S,
-                   const Rate& r,
-                   const Volatility& sigma,
-		   const Rate& q);
+        ConstantBlackScholesProcess(double S_, double r_, double sigma_, double q_);
 
 	// Interface with StochasticProcess1D
         Real x0() const;
@@ -20,10 +17,10 @@ namespace QuantLib {
         Real apply(Real x0, Real dx) const;
 
       private:
-        Real S ;
-        Rate r;
-        Volatility sigma ;
-        Real q;
+        double S;
+        double r;
+        double sigma;
+        double q;
     };
     
 }
