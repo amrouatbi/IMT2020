@@ -11,7 +11,7 @@ namespace QuantLib {
 
     Real ConstantBlackScholesProcess::drift(Time t, Real x) const {
 	// Returns µ(t,x) which is r(t) - q(t) - 0.5 sigma(t,x)^2
-        return r - q - 0.5*sigma*sigma
+        return r - q - 0.5*sigma*sigma;
     }
 
     Real ConstantBlackScholesProcess::diffusion(Time t, Real x) const {
