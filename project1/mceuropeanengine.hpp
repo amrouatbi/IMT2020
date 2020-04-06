@@ -30,6 +30,7 @@
 #include <ql/processes/blackscholesprocess.hpp>
 #include <ql/termstructures/volatility/equityfx/blackconstantvol.hpp>
 #include <ql/termstructures/volatility/equityfx/blackvariancecurve.hpp>
+#include <ql/termstructures/yieldtermstructure.hpp>
 
 namespace QuantLib {
 
@@ -61,6 +62,24 @@ namespace QuantLib {
              Real requiredTolerance,
              Size maxSamples,
              BigNatural seed);
+
+        // Override the path generator
+        ext::shared_ptr<path_generator_type> pathGenerator() const override{
+            Size dimensions = MCVanillaEngine<SingleVariate,RNG,S>::process_->factors();
+            TimeGrid grid = this->timeGrid();
+            typename RNG::rsg_type generator =
+                RNG::make_sequence_generator(dimensions*(grid.size()-1),MCVanillaEngine<SingleVariate,RNG,S>::seed_);
+
+            return ext::shared_ptr<path_generator_type>(
+                   new path_generator_type(MCVanillaEngine<SingleVariate,RNG,S>::process_, grid,
+                                           generator, MCVanillaEngine<SingleVariate,RNG,S>::brownianBridge_));
+        }
+
+
+
+
+
+
       protected:
         boost::shared_ptr<path_pricer_type> pathPricer() const;
     };
@@ -163,7 +182,8 @@ namespace QuantLib {
       tolerance_(Null<Real>()), brownianBridge_(false), seed_(0), withConstantParameters_(withConstantParameters) {
             if (withConstantParameters) {
                 QL_FAIL("not implemented");
-            } // Else, do nothing; it will automatically proceed with the usual engine
+                
+            } // Else, do nothing; it will automatically proceed with the generalized process
 
 
 
