@@ -89,7 +89,7 @@ int main() {
 
 	// Using the MCEuropeanEngine_2 from mceuropeanengine.hpp
         boost::shared_ptr<PricingEngine> mcengine;
-        mcengine = MakeMCEuropeanEngine_2<PseudoRandom>(gbsProcess)
+        mcengine = MakeMCEuropeanEngine_2<PseudoRandom>(gbsProcess,false) // Without constant parameters
             .withSteps(timeSteps)
             .withAbsoluteTolerance(0.02)
             .withSeed(mcSeed);

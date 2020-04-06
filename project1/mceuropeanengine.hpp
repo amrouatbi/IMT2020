@@ -70,7 +70,7 @@ namespace QuantLib {
     class MakeMCEuropeanEngine_2 {
       public:
         MakeMCEuropeanEngine_2(
-                    const boost::shared_ptr<GeneralizedBlackScholesProcess>&);
+                    const boost::shared_ptr<GeneralizedBlackScholesProcess>&, bool withConstantParameters);
         // named parameters
         MakeMCEuropeanEngine_2& withSteps(Size steps);
         MakeMCEuropeanEngine_2& withStepsPerYear(Size steps);
@@ -89,6 +89,7 @@ namespace QuantLib {
         Real tolerance_;
         bool brownianBridge_;
         BigNatural seed_;
+        bool withConstantParameters_;
     };
 
     class EuropeanPathPricer_2 : public PathPricer<Path> {
@@ -155,11 +156,20 @@ namespace QuantLib {
 
     template <class RNG, class S>
     inline MakeMCEuropeanEngine_2<RNG,S>::MakeMCEuropeanEngine_2(
-             const boost::shared_ptr<GeneralizedBlackScholesProcess>& process)
+             const boost::shared_ptr<GeneralizedBlackScholesProcess>& process, bool withConstantParameters)
     : process_(process), antithetic_(false),
       steps_(Null<Size>()), stepsPerYear_(Null<Size>()),
       samples_(Null<Size>()), maxSamples_(Null<Size>()),
-      tolerance_(Null<Real>()), brownianBridge_(false), seed_(0) {}
+      tolerance_(Null<Real>()), brownianBridge_(false), seed_(0), withConstantParameters_(withConstantParameters) {
+            if (withConstantParameters) {
+                QL_FAIL("not implemented");
+            } // Else, do nothing; it will automatically proceed with the usual engine
+
+
+
+
+
+}
 
     template <class RNG, class S>
     inline MakeMCEuropeanEngine_2<RNG,S>&
