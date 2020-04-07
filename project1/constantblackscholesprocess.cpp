@@ -3,7 +3,7 @@
 
 namespace QuantLib {
 
-	ConstantBlackScholesProcess::ConstantBlackScholesProcess(double S_, double r_, double sigma_, double q_) : S(S_), r(r_), sigma(sigma_), q(q_) { std::cout << "Constant Black Scholes Process initialized" << std::endl; }
+	ConstantBlackScholesProcess::ConstantBlackScholesProcess(double S_, double r_, double sigma_, double q_) : S(S_), r(r_), sigma(sigma_), q(q_) {}
 
     Real ConstantBlackScholesProcess::x0() const {
         return S;

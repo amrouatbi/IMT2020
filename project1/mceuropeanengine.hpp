@@ -31,6 +31,8 @@
 #include <ql/termstructures/volatility/equityfx/blackconstantvol.hpp>
 #include <ql/termstructures/volatility/equityfx/blackvariancecurve.hpp>
 #include <ql/termstructures/yieldtermstructure.hpp>
+#include <iostream>
+#include "constantblackscholesprocess.hpp"
 
 namespace QuantLib {
 
@@ -61,7 +63,8 @@ namespace QuantLib {
              Size requiredSamples,
              Real requiredTolerance,
              Size maxSamples,
-             BigNatural seed);
+             BigNatural seed,
+             bool withConstantParameters);
 
         // Override the path generator
         ext::shared_ptr<path_generator_type> pathGenerator() const override{
@@ -70,15 +73,39 @@ namespace QuantLib {
             typename RNG::rsg_type generator =
                 RNG::make_sequence_generator(dimensions*(grid.size()-1),MCVanillaEngine<SingleVariate,RNG,S>::seed_);
 
+            if (withConstantParameters)   {
+                // Extract the parameters from the generalized black scholes process
+                double strike = ext::dynamic_pointer_cast<StrikedTypePayoff>(MCVanillaEngine<SingleVariate,RNG,S>::arguments_.payoff)->strike();
+                double r = process->riskFreeRate()->zeroRate(grid.back(), Continuous);
+                double q = process->dividendYield()->zeroRate(grid.back(), Continuous);
+                double v = process->blackVolatility()->blackVol(grid.back(), strike);
+                double s = process->x0();
+
+                // Declare our constant black scholes process with those parameters
+                boost::shared_ptr<ConstantBlackScholesProcess> cbsp(new ConstantBlackScholesProcess(s,r,v,q));
+                
+
+                // Return OUR process
+                return ext::shared_ptr<path_generator_type>(
+                   new path_generator_type(cbsp, grid,
+                                           generator, MCVanillaEngine<SingleVariate,RNG,S>::brownianBridge_));
+            }
+
+            else {
+
             return ext::shared_ptr<path_generator_type>(
                    new path_generator_type(MCVanillaEngine<SingleVariate,RNG,S>::process_, grid,
                                            generator, MCVanillaEngine<SingleVariate,RNG,S>::brownianBridge_));
+
+            }
         }
 
 
 
 
-
+        private:
+            bool withConstantParameters;
+            const boost::shared_ptr<GeneralizedBlackScholesProcess>& process;
 
       protected:
         boost::shared_ptr<path_pricer_type> pathPricer() const;
@@ -136,7 +163,8 @@ namespace QuantLib {
              Size requiredSamples,
              Real requiredTolerance,
              Size maxSamples,
-             BigNatural seed)
+             BigNatural seed,
+             bool withConstantParameters)
     : MCVanillaEngine<SingleVariate,RNG,S>(process,
                                            timeSteps,
                                            timeStepsPerYear,
@@ -146,7 +174,7 @@ namespace QuantLib {
                                            requiredSamples,
                                            requiredTolerance,
                                            maxSamples,
-                                           seed) {}
+                                           seed), withConstantParameters(withConstantParameters), process(process) {}
 
 
     template <class RNG, class S>
@@ -179,17 +207,7 @@ namespace QuantLib {
     : process_(process), antithetic_(false),
       steps_(Null<Size>()), stepsPerYear_(Null<Size>()),
       samples_(Null<Size>()), maxSamples_(Null<Size>()),
-      tolerance_(Null<Real>()), brownianBridge_(false), seed_(0), withConstantParameters_(withConstantParameters) {
-            if (withConstantParameters) {
-                QL_FAIL("not implemented");
-                
-            } // Else, do nothing; it will automatically proceed with the generalized process
-
-
-
-
-
-}
+      tolerance_(Null<Real>()), brownianBridge_(false), seed_(0), withConstantParameters_(withConstantParameters) {}
 
     template <class RNG, class S>
     inline MakeMCEuropeanEngine_2<RNG,S>&
@@ -270,7 +288,7 @@ namespace QuantLib {
                                       antithetic_,
                                       samples_, tolerance_,
                                       maxSamples_,
-                                      seed_));
+                                      seed_,withConstantParameters_));
     }
 
 
