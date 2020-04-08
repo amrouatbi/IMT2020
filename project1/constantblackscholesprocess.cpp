@@ -1,9 +1,13 @@
 
 #include "constantblackscholesprocess.hpp"
+#include <iostream>
 
 namespace QuantLib {
 
-	ConstantBlackScholesProcess::ConstantBlackScholesProcess(double S_, double r_, double sigma_, double q_) : S(S_), r(r_), sigma(sigma_), q(q_) {}
+	ConstantBlackScholesProcess::ConstantBlackScholesProcess(double S_, double r_, double sigma_, double q_) : S(S_), r(r_), sigma(sigma_), q(q_) {
+
+		std::cout << "DEBUG: ConstantBlackScholesProcess initialized!" << std::endl;
+}
 
     Real ConstantBlackScholesProcess::x0() const {
         return S;

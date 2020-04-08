@@ -1,19 +1,16 @@
 
-#include "constantblackscholesprocess.hpp"
 #include "mceuropeanengine.hpp"
 #include <ql/pricingengines/vanilla/mceuropeanengine.hpp>
 #include <ql/quantlib.hpp>
 #include <iostream>
 #include <chrono>
 
-// TO COMPILE : g++ main.cpp -o output -lQuantLib
+// TO COMPILE : g++ main.cpp constantblackscholesprocess.cpp -o output -lQuantLib
 // Then ./output
 
 using namespace QuantLib;
 
 int main() {
-
-    try {
 
 	auto start = std::chrono::steady_clock::now();
 
@@ -89,7 +86,7 @@ int main() {
 
 	// Using the MCEuropeanEngine_2 from mceuropeanengine.hpp
         boost::shared_ptr<PricingEngine> mcengine;
-        mcengine = MakeMCEuropeanEngine_2<PseudoRandom>(gbsProcess,false) // Without constant parameters
+        mcengine = MakeMCEuropeanEngine_2<PseudoRandom>(gbsProcess,true) // Without constant parameters
             .withSteps(timeSteps)
             .withAbsoluteTolerance(0.02)
             .withSeed(mcSeed);
@@ -106,13 +103,5 @@ int main() {
 		<< " ms" << std::endl;
 
         return 0;
-
-    } catch (std::exception& e) {
-        std::cerr << e.what() << std::endl;
-        return 1;
-    } catch (...) {
-        std::cerr << "unknown error" << std::endl;
-        return 1;
-    }
 }
 

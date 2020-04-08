@@ -74,16 +74,19 @@ namespace QuantLib {
                 RNG::make_sequence_generator(dimensions*(grid.size()-1),MCVanillaEngine<SingleVariate,RNG,S>::seed_);
 
             if (withConstantParameters)   {
+                // Downcast process_
+                  ext::shared_ptr<GeneralizedBlackScholesProcess> bsprocess =
+                       ext::dynamic_pointer_cast<GeneralizedBlackScholesProcess>(this->process_);
+
                 // Extract the parameters from the generalized black scholes process
                 double strike = ext::dynamic_pointer_cast<StrikedTypePayoff>(MCVanillaEngine<SingleVariate,RNG,S>::arguments_.payoff)->strike();
-                double r = process->riskFreeRate()->zeroRate(grid.back(), Continuous);
-                double q = process->dividendYield()->zeroRate(grid.back(), Continuous);
-                double v = process->blackVolatility()->blackVol(grid.back(), strike);
-                double s = process->x0();
+                double r = bsprocess->riskFreeRate()->zeroRate(grid.back(), Continuous);
+                double q = bsprocess->dividendYield()->zeroRate(grid.back(), Continuous);
+                double v = bsprocess->blackVolatility()->blackVol(grid.back(), strike);
+                double s = bsprocess->x0();
 
                 // Declare our constant black scholes process with those parameters
-                boost::shared_ptr<ConstantBlackScholesProcess> cbsp(new ConstantBlackScholesProcess(s,r,v,q));
-                
+                ext::shared_ptr<ConstantBlackScholesProcess> cbsp(new ConstantBlackScholesProcess(s,r,v,q));
 
                 // Return OUR process
                 return ext::shared_ptr<path_generator_type>(
@@ -105,7 +108,6 @@ namespace QuantLib {
 
         private:
             bool withConstantParameters;
-            const boost::shared_ptr<GeneralizedBlackScholesProcess>& process;
 
       protected:
         boost::shared_ptr<path_pricer_type> pathPricer() const;
@@ -174,7 +176,7 @@ namespace QuantLib {
                                            requiredSamples,
                                            requiredTolerance,
                                            maxSamples,
-                                           seed), withConstantParameters(withConstantParameters), process(process) {}
+                                           seed), withConstantParameters(withConstantParameters){}
 
 
     template <class RNG, class S>
