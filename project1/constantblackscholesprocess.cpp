@@ -1,13 +1,13 @@
 
 #include "constantblackscholesprocess.hpp"
 #include <iostream>
+#include <ql/processes/eulerdiscretization.hpp>
 
 namespace QuantLib {
 
-	ConstantBlackScholesProcess::ConstantBlackScholesProcess(double S_, double r_, double sigma_, double q_) : S(S_), r(r_), sigma(sigma_), q(q_) {
-
-		std::cout << "DEBUG: ConstantBlackScholesProcess initialized!" << std::endl;
-}
+	ConstantBlackScholesProcess::ConstantBlackScholesProcess(double S_, double r_, double sigma_, double q_)
+	: StochasticProcess1D(ext::make_shared<EulerDiscretization>()),
+	  S(S_), r(r_), sigma(sigma_), q(q_) {}
 
     Real ConstantBlackScholesProcess::x0() const {
         return S;

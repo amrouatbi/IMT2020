@@ -81,15 +81,16 @@ int main() {
         // Analytic formulas:
 
         // Monte Carlo Method:
-        int timeSteps = 20;
+        int timeSteps = 1;
         Size mcSeed = 42;
+	Size n_samples = 10000;
 
 	// Using the MCEuropeanEngine_2 from mceuropeanengine.hpp
         boost::shared_ptr<PricingEngine> mcengine;
-        mcengine = MakeMCEuropeanEngine_2<PseudoRandom>(gbsProcess,true) // Without constant parameters
+        mcengine = MakeMCEuropeanEngine_2<PseudoRandom>(gbsProcess,false) // Second argument is boolean for constant-parameters BS-process
             .withSteps(timeSteps)
-            .withAbsoluteTolerance(0.02)
-            .withSeed(mcSeed);
+            .withSeed(mcSeed)
+	    .withSamples(n_samples);
         europeanOption.setPricingEngine(mcengine);
 
         Real errorEstimate = europeanOption.errorEstimate();
